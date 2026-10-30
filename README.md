@@ -1,60 +1,75 @@
-# AthenaOS ARM64 🛡️
+![banner](assets/banner.png)
 
-This repository contains the configuration and build system for creating AthenaOS ISO images for ARM64 (aarch64) architecture.
+# AthenaOS ARM64
 
-## 🚀 Automated Builds
+This repository contains the configuration and build system for
+creating AthenaOS ISO images for ARM64 (aarch64) architecture: a
+Fedora 40 based live image defined by the `athena-iso.ks` kickstart
+file, plus the pacman configuration and keyrings the live system
+carries in `src/`.
 
-This repository uses GitHub Actions to automatically build ARM64 ISO images using macOS runners (Apple Silicon). 
+## Automated builds
 
-### Building via GitHub Actions
+GitHub Actions builds the ISO in the `Build AthenaOS ARM64 ISO`
+workflow (`.github/workflows/build-arm64-iso.yml`):
 
-#### Automatic Builds
-- **Push to main**: Triggers a development build
-- **Create tag**: Triggers a release build
-- **Pull Request**: Validates the build configuration
+- **Push to main**: triggers a build
+- **Create a `v*` tag**: triggers a build and a GitHub release
+- **Pull request to main**: triggers a build
+- **Manual run**: from the Actions tab, with an optional release
+  version input
 
-#### Manual Builds
-You can trigger a manual build:
-
-1. Go to the **Actions** tab in this repository
-2. Select **Build AthenaOS ARM64 ISO** workflow
-3. Click **Run workflow**
-4. Optionally specify a release version (e.g., `v1.0.0`)
-5. Click **Run workflow**
-
-### Download Built ISOs
+The job runs on `ubuntu-latest` (x86_64). It sets up QEMU ARM64
+emulation and Docker Buildx, builds a Fedora 40 builder image, and
+runs `livemedia-creator` inside it under ARM64 emulation to produce
+the ISO. Earlier revisions of this README described macOS runners and
+Colima; the workflow no longer uses either.
 
 Built ISO images are available in two places:
 
-1. **Artifacts**: Available for 30 days after each build in the Actions tab
-2. **Releases**: Permanent releases with proper versioning
+1. **Artifacts**: kept for 30 days after each build, together with
+   SHA256 and MD5 checksums and the build log
+2. **Releases**: created for tags and for manual runs
 
-## 📋 Build Process
+## Build process
 
-The build process:
+1. QEMU and Buildx are set up for `linux/arm64`
+2. A Fedora 40 container is built with lorax, anaconda, and
+   livemedia-creator, and the `src/` pacman files are copied into it
+3. The kickstart file is validated with `ksvalidator`
+4. `livemedia-creator` builds the ISO from `athena-iso.ks`
+5. SHA256 and MD5 checksums are generated, and the ISO is uploaded as
+   an artifact or release
 
-1. Uses `macos-latest` runners (Apple Silicon ARM64)
-2. Sets up Docker with ARM64 support via Colima
-3. Creates a Fedora container with build tools
-4. Builds the ISO using `livemedia-creator`
-5. Generates checksums (SHA256, MD5)
-6. Creates GitHub releases for tags
+## Local development
 
-## 🛠️ Local Development
+No ISO build is needed to check changes. Install the pykickstart
+package (Fedora/RHEL: `sudo dnf install pykickstart`; Ubuntu/Debian:
+`sudo apt install pykickstart`) and run the bundled validation script:
 
-To test changes locally before pushing:
+```bash
+bash validate-kickstart.sh
+```
 
-1. Validate the kickstart file:
-   ```bash
-   pykickstart --version F40 athena-iso.ks
-   ```
+The script changes into its own directory, validates the kickstart
+syntax for Fedora 40 with `ksvalidator` (the validator the pykickstart
+package actually ships; there is no `pykickstart` command), probes the
+ARM64 repository URLs, checks that every required file in `src/`
+exists, and scans the kickstart package list for x86-only packages. It
+exits non-zero if the syntax check fails or a required file is
+missing. The repository URL probes are advisory only: a warning there
+does not fail the script.
 
-2. Check repository URLs are accessible for ARM64:
-   ```bash
-   curl -I "https://mirrors.fedoraproject.org/mirrorlist?repo=fedora-40&arch=aarch64"
-   ```
+Equivalently, validate the syntax directly:
 
-## 📁 Repository Structure
+```bash
+ksvalidator --version F40 athena-iso.ks
+```
+
+Building the full ISO locally is not scripted in this repo; the
+supported build path is the GitHub Actions workflow above.
+
+## Repository structure
 
 ```
 .
@@ -64,41 +79,42 @@ To test changes locally before pushing:
 │   ├── athena-mirrorlist      # Athena repository mirrors
 │   ├── athena-revoked         # Revoked keys
 │   ├── athena-trusted         # Trusted keys
-│   ├── athena.gpg            # GPG keyring
-│   ├── chaotic-*             # Chaotic AUR repository configs
-│   └── pacman.conf           # Pacman configuration
-├── athena-iso.ks             # Main kickstart file
-└── README.md                 # This file
+│   ├── athena.gpg             # GPG keyring
+│   ├── chaotic-*              # Chaotic AUR repository configs
+│   └── pacman.conf            # Pacman configuration
+├── athena-iso.ks              # Main kickstart file
+├── validate-kickstart.sh      # Local validation script
+├── assets/                    # Logo and banner
+└── README.md                  # This file
 ```
 
-## 🎯 Target Architecture
+## Target architecture
 
 - **Architecture**: ARM64 (aarch64)
-- **Base Distribution**: Fedora 40
-- **Package Manager**: DNF
-- **Desktop Environment**: XFCE4 (default)
+- **Base distribution**: Fedora 40, for the live image and build tools
+- **Desktop environment**: XFCE4 (default session in the kickstart)
 
-## ⚠️ Important Notes
+## Important notes
 
 - This is an experimental ARM64 port of AthenaOS
 - Thoroughly test on your target ARM64 device before production use
 - Some packages might not be available for ARM64 architecture
 - Report issues and compatibility problems
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork this repository
 2. Make your changes to the kickstart file or configurations
-3. Test locally if possible
+3. Run `bash validate-kickstart.sh` locally
 4. Create a Pull Request
-5. The GitHub Actions will validate your changes
+5. The GitHub Actions workflow will run a build
 
-## 📞 Support
+## Support
 
 - **Issues**: Use GitHub Issues for bug reports and feature requests
 - **Discussions**: Use GitHub Discussions for general questions
-- **Main Project**: Visit the main AthenaOS repository for general support
+- **Main project**: Visit the main AthenaOS repository for general support
 
-## 📄 License
+## License
 
 This project follows the same license as the main AthenaOS project.

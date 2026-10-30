@@ -85,7 +85,6 @@ pv
 rsync
 squashfs-tools
 sudo
-syslinux
 terminus-fonts-console
 testdisk
 usbutils

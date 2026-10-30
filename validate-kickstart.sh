@@ -3,12 +3,18 @@
 
 set -e
 
+# Run from the directory this script lives in, so the relative paths
+# below work no matter where the caller invokes it from.
+cd "$(dirname "$0")"
+
 echo "🔍 Validating AthenaOS ARM64 Kickstart Configuration"
 echo "=================================================="
 
-# Check if pykickstart is available
-if ! command -v pykickstart &> /dev/null; then
-    echo "❌ pykickstart not found. Please install it:"
+# The pykickstart package ships its validator as the ksvalidator
+# command. There is no pykickstart command, so checking for one made
+# this script report a missing tool on correctly installed systems.
+if ! command -v ksvalidator &> /dev/null; then
+    echo "❌ ksvalidator not found. Please install the pykickstart package:"
     echo "   Fedora/RHEL: sudo dnf install pykickstart"
     echo "   Ubuntu/Debian: sudo apt install pykickstart"
     exit 1
@@ -16,7 +22,7 @@ fi
 
 # Validate kickstart syntax
 echo "📋 Validating kickstart syntax..."
-if pykickstart --version F40 athena-iso.ks; then
+if ksvalidator --version F40 athena-iso.ks; then
     echo "✅ Kickstart syntax is valid"
 else
     echo "❌ Kickstart syntax validation failed"
@@ -44,7 +50,9 @@ for repo in "${repos[@]}"; do
     fi
 done
 
-# Check required source files
+# Check required source files. Missing files are a validation failure:
+# the previous version printed them but still exited 0 and announced
+# that validation was complete.
 echo ""
 echo "📁 Checking required source files..."
 
@@ -59,11 +67,13 @@ required_files=(
     "src/chaotic-revoked"
 )
 
+missing_files=0
 for file in "${required_files[@]}"; do
     if [ -f "$file" ]; then
         echo "  ✅ $file"
     else
         echo "  ❌ $file (missing)"
+        missing_files=$((missing_files + 1))
     fi
 done
 
@@ -72,16 +82,25 @@ echo "🎯 Architecture-specific checks..."
 echo "  Target architecture: aarch64 (ARM64)"
 echo "  Base Fedora version: 40"
 
-# Check for potentially problematic x86_64-specific packages
+# Check for x86-only packages. Only the %packages section is scanned,
+# and only whole package names match. The previous substring scan of
+# the whole file flagged a line of the embedded PGP key block and a
+# comment, and never flagged the one real x86-only entry, syslinux.
 echo ""
-echo "🔍 Scanning for potentially x86_64-specific packages..."
-x86_packages=$(grep -E "(intel-|amd-|x86)" athena-iso.ks || true)
+echo "🔍 Scanning for x86-only packages..."
+x86_packages=$(awk '/^%packages/,/^%end/' athena-iso.ks | grep -E "^(syslinux|syslinux-[a-z]+|microcode_ctl|intel-microcode|amd-ucode)$" || true)
 if [ -n "$x86_packages" ]; then
-    echo "⚠️  Found potentially x86_64-specific packages:"
+    echo "⚠️  Found x86-only packages:"
     echo "$x86_packages"
-    echo "   These may need ARM64 alternatives or removal"
+    echo "   These have no aarch64 build and will fail the package step"
 else
-    echo "✅ No obvious x86_64-specific packages found"
+    echo "✅ No x86-only packages found"
+fi
+
+if [ "$missing_files" -gt 0 ]; then
+    echo ""
+    echo "❌ Validation failed: $missing_files required source file(s) missing"
+    exit 1
 fi
 
 echo ""

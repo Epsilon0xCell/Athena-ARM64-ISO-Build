@@ -131,7 +131,7 @@ jobs:
         
         # Verify kickstart file
         echo "🔍 Validating kickstart file..."
-        if ! pykickstart --version F${{ env.FEDORA_VERSION }} athena-iso.ks; then
+        if ! ksvalidator --version F${{ env.FEDORA_VERSION }} athena-iso.ks; then
             echo "❌ ERROR: Kickstart file validation failed"
             exit 1
         fi
