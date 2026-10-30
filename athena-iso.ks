@@ -1,5 +1,11 @@
 # athena-iso.ks
 
+# I define the whole live image in this one file: the installer
+# settings at the top, the package list in %packages, and two %post
+# scripts that write files into the built system. The base is
+# Fedora 40 and the target is aarch64, so every package named below
+# has to exist for aarch64 or the package step of the build fails.
+
 lang en_US.UTF-8
 keyboard us
 timezone Europe/Rome
@@ -8,9 +14,19 @@ firewall --enabled --service=mdns
 xconfig --startxonboot
 zerombr
 clearpart --all
+# The root size is 5120 MB here. A commented out 10240 line further
+# down records that the compose once ran out of space, so this
+# number has been raised before and is not a typo to fix quietly.
 part / --size 5120 --fstype ext4
+# I enable the guest agents for QEMU, VirtualBox, and VMware in this
+# line because the live image is mostly run inside one of those,
+# and I keep sshd disabled so the live session does not start with
+# a network login service running.
 services --enabled=NetworkManager,qemu-guest-agent,vboxservice,vmtoolsd --disabled=sshd
 network --bootproto=dhcp --device=link --activate
+# Root stays locked. The live user created further down is the
+# only login this image has, and the first %post gives that user's
+# wheel group passwordless sudo instead of opening root up.
 rootpw --lock --iscrypted locked
 shutdown
 
@@ -22,12 +38,25 @@ url --mirrorlist=https://mirrors.fedoraproject.org/mirrorlist?repo=fedora-$relea
 repo --name=athenaos --baseurl=https://copr-be.cloud.fedoraproject.org/results/@athenaos/athenaos/fedora-$releasever-$basearch/
 repo --name=nix --baseurl=https://copr-be.cloud.fedoraproject.org/results/petersen/nix/fedora-$releasever-$basearch/
 # Note that if one of the repo URLs are wrong, the job process will stuck on "anaconda" command
+# I write $releasever and $basearch in the repo URLs above instead
+# of 40 and aarch64, so those lines survive a Fedora version bump
+# in the workflow without being edited one by one.
 
 # spin was failing to compose due to lack of space, so bumping the size.
 #part / --size 10240
 
+# liveuser has to be created here, before %packages and %post,
+# because the %post scripts write files into this account's home
+# directory. The password is plaintext in this file, which I accept
+# only because this account exists on live media, not on an
+# installed system anyone keeps.
 user --name=liveuser --groups=wheel --password='athena' --plaintext
 
+# One package name per line in this section, with a leading dash
+# to exclude a package the groups pull in. I group the names under
+# the banner comments so a package with no aarch64 build is easier
+# to track to its group. The validation script scans only this
+# section, and only whole names, when it looks for x86-only entries.
 %packages
 #######################################################
 ###                  BASIC PACKAGES                 ###
@@ -178,6 +207,10 @@ firefox-blackice
 hyperv-tools
 nix
 open-vm-tools
+# pacman sits in a Fedora live image on purpose. The second %post
+# below writes the Athena and Chaotic keyrings and a pacman.conf
+# into the built system, and none of that has anything to drive it
+# if this package is missing from the list.
 pacman
 qemu-guest-agent
 rate-mirrors
@@ -187,11 +220,18 @@ xorg-x11-drv-vmware
 
 %end
 
+# The first %post runs inside the built system. I keep my notes in
+# this section outside the heredocs only: the text between a
+# heredoc start line and its closing marker becomes the content of
+# a file on the built system, word for word, so a comment placed
+# inside one would ship as file content.
 %post
 # VARIABLES
 USERNAME="liveuser"
 
 # Enable livesys services
+# These units come from the livesys-scripts package in %packages,
+# so these enables depend on that package staying in the list.
 systemctl enable livesys.service
 systemctl enable livesys-late.service
 systemctl enable nix-daemon.service
@@ -564,6 +604,9 @@ gpgkey=https://packages.microsoft.com/fedora/\$releasever/prod/repodata/repomd.x
 EOF
 
 
+# Passwordless sudo for wheel is a live media choice, not a setting
+# I would ship on an installed system. The 0440 mode is part of it:
+# sudo treats a sudoers file with loose permissions as unsafe.
 echo "%wheel ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/g_wheel
 chmod 0440 /etc/sudoers.d/g_wheel
 
@@ -574,6 +617,11 @@ chmod 0440 /etc/sudoers.d/g_wheel
 
 %end
 
+# The second %post only drops pacman data files into place: the
+# mirror list, the two keyrings, and a pacman.conf. It stays
+# separate from the first %post, which configures the live system
+# itself, so a change to one job does not have to be read against
+# the other.
 %post
 
 # athena-mirrorlist
@@ -1005,6 +1053,12 @@ lOLAdGyaPKCyFyTVk9IUj6ONi/6FDAYozKh7kjdODosMHuvNmYUVlCujkSlnxpk=
 EOF
 
 # pacman.conf
+# The heredoc under this line is a second copy of src/pacman.conf.
+# I checked in this pass that the two are byte identical right now,
+# and a repo change has to be made in both or the built system and
+# the repo copy drift apart. Both copies include a
+# chaotic-mirrorlist file that this repo never creates, in src/ or
+# here, so the chaotic-aur repo points at a file nothing provides.
 cat > /etc/pacman.conf <<'EOF'
 #
 # /etc/pacman.conf

@@ -3,6 +3,11 @@
 
 set -e
 
+# I keep set -e on as a backstop for the commands I did not wrap in
+# an if check, like the cd below. The two failures that decide the
+# exit code, the syntax run and the missing file count, are handled
+# by hand further down because each one needs its own message.
+
 # Run from the directory this script lives in, so the relative paths
 # below work no matter where the caller invokes it from.
 cd "$(dirname "$0")"
@@ -33,6 +38,9 @@ fi
 echo ""
 echo "🌐 Checking repository accessibility for ARM64..."
 
+# This list repeats the kickstart repo URLs by hand. Nothing reads
+# them out of athena-iso.ks, so a repo added to the kickstart is not
+# probed here until I add it here too.
 repos=(
     "https://mirrors.fedoraproject.org/mirrorlist?repo=fedora-40&arch=aarch64"
     "https://mirrors.fedoraproject.org/mirrorlist?repo=updates-released-f40&arch=aarch64"
@@ -41,8 +49,13 @@ repos=(
     "https://hub.athenaos.org/athena/aarch64"
 )
 
+# These probes are advisory and never fail the script. A mirror
+# being down or this machine being offline says nothing about the
+# kickstart file, so a bad answer only prints the warning below.
 for repo in "${repos[@]}"; do
     echo -n "  Checking $repo ... "
+    # I match the status line text because a mirrorlist URL answers
+    # with a redirect as often as a 200, and both mean reachable.
     if curl -s --head "$repo" | head -n 1 | grep -q "200 OK\|302 Found\|301 Moved"; then
         echo "✅"
     else
@@ -89,6 +102,9 @@ echo "  Base Fedora version: 40"
 echo ""
 echo "🔍 Scanning for x86-only packages..."
 x86_packages=$(awk '/^%packages/,/^%end/' athena-iso.ks | grep -E "^(syslinux|syslinux-[a-z]+|microcode_ctl|intel-microcode|amd-ucode)$" || true)
+# A hit here only warns and does not change the exit code, unlike a
+# missing file below. The list above is also the whole coverage: an
+# x86-only package I have not named here passes this scan unseen.
 if [ -n "$x86_packages" ]; then
     echo "⚠️  Found x86-only packages:"
     echo "$x86_packages"
@@ -97,6 +113,9 @@ else
     echo "✅ No x86-only packages found"
 fi
 
+# The missing file exit sits after the counting loop and after the
+# x86 scan, so one run reports every missing file instead of
+# stopping at the first one it finds.
 if [ "$missing_files" -gt 0 ]; then
     echo ""
     echo "❌ Validation failed: $missing_files required source file(s) missing"
@@ -105,6 +124,8 @@ fi
 
 echo ""
 echo "📊 Kickstart validation complete!"
+# The build itself is not scripted here. These steps point at the
+# GitHub Actions workflow, which is the only build path in this repo.
 echo ""
 echo "🚀 To build the ISO:"
 echo "   1. Push changes to GitHub"

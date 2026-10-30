@@ -1,3 +1,7 @@
+# This workflow is the only build path for the ISO. The runner is an
+# x86_64 Ubuntu machine, and the ARM64 work happens through QEMU
+# emulation inside a Fedora 40 container, which is why the build
+# container further down gets explicit memory and cpu limits.
 name: Build AthenaOS ARM64 ISO
 
 on:
@@ -13,6 +17,9 @@ on:
         required: false
         default: ''
 
+# I pin the Fedora version and the ISO name in this one block
+# because the builder image tag, the ksvalidator version flag, and
+# the output file name all read them from here.
 env:
   FEDORA_VERSION: 40
   ISO_NAME: athenaos-arm64
@@ -30,6 +37,10 @@ jobs:
       with:
         platforms: linux/amd64,linux/arm64
 
+    # QEMU has to be registered before the ARM64 test container and
+    # the ARM64 builder image run below. On this x86_64 runner,
+    # nothing ARM64 executes until this step and the Buildx step
+    # above it have both finished.
     - name: Set up QEMU for ARM64 emulation
       uses: docker/setup-qemu-action@v3
       with:
@@ -46,6 +57,11 @@ jobs:
         echo "Testing ARM64 emulation:"
         docker run --rm --platform linux/arm64 alpine:latest uname -m
         
+    # The version string decides the ISO file name, so every later
+    # step reads it from this step's outputs instead of working it
+    # out again. A tag push uses the tag, a manual run uses its
+    # input, and anything else falls back to the date plus the
+    # short commit hash.
     - name: Set version variables
       id: version
       run: |
@@ -60,6 +76,9 @@ jobs:
         echo "iso_filename=${ISO_NAME}-${VERSION}.iso" >> $GITHUB_OUTPUT
         echo "Building version: $VERSION"
         
+    # The builder image is Fedora, not Ubuntu, because
+    # livemedia-creator and ksvalidator come from the Fedora repos.
+    # The runner only hosts Docker; the build tools live in here.
     - name: Create build container
       run: |
         cat << 'EOF' > Dockerfile
@@ -109,6 +128,10 @@ jobs:
         echo "Building Docker image for ARM64..."
         docker build --platform linux/arm64 -t athenaos-builder .
         
+    # The build script is written as a heredoc and runs inside the
+    # ARM64 container, not on the runner. It validates the kickstart
+    # a second time in there, so a file that passed a local check
+    # still gets stopped if the validator in the image rejects it.
     - name: Build ARM64 ISO
       run: |
         mkdir -p ./output
@@ -212,6 +235,9 @@ jobs:
           exit 1
         fi
         
+    # Checksums run only when the verify step above passed, because
+    # that step exits 1 when the ISO file is missing and a failed
+    # step stops the job before this one.
     - name: Generate checksums
       run: |
         cd output
@@ -239,6 +265,9 @@ jobs:
           output/build.log
         retention-days: 30
         
+    # A release is cut only for manual runs and tag pushes. A plain
+    # push to main or a pull request uploads an artifact and stops
+    # there, so most builds never reach this step.
     - name: Create Release
       if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v1
