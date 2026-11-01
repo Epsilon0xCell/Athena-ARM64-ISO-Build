@@ -3,108 +3,81 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Athena ARM64 ISO Build: what it is, how it runs, where it stops</title>
+<title>Athena ARM64 ISO Build: the census sheet</title>
 <meta name="description" content="This repository contains the configuration and build system for creating AthenaOS ISO images for ARM64 (aarch64) architecture.">
 <style>
-:root {
-  --bg: #1a0c0c; --panel: #2a1412; --ink: #f0e6d6;
-  --mut: #381b18;
-  --acc: #c9a24b; --acc2: #94b2c4;
-  --line: #2a1412;
-}
-* { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink);
-  font-family: Verdana, Geneva, sans-serif; line-height: 1.55; }
-code, pre, .mono { font-family: 'Lucida Console', monospace; }
-a { color: var(--acc2); }
-.hero { padding: 3rem 6vw 1rem; }
-.hero img.banner { width: 100%; height: auto; border: 1px solid var(--line);
-  border-radius: 10px; }
-.logo { width: 92px; height: 92px; border-radius: 18px;
-  border: 1px solid var(--line); }
-h1 { font-size: 2.4rem; margin: 0.4em 0 0.1em; }
-h2 { border-bottom: 2px solid var(--acc); padding-bottom: 0.2em;
-  margin-top: 2em; }
-.lede { font-size: 1.15rem; max-width: 62ch; }
-main { padding: 0 6vw 3rem; max-width: 1180px; margin: 0 auto; }
-.grid { display: grid; gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
-.card { background: var(--panel); border: 1px solid var(--line);
-  border-radius: 12px; padding: 1rem 1.2rem; }
-.card.pop { animation: rise 0.7s ease both; }
-@keyframes rise { from { opacity: 0; transform: translateY(14px); }
-  to { opacity: 1; transform: none; } }
-pre.code { background: #101014; color: #e8e6df; padding: 1rem 1.2rem;
-  border-radius: 12px; overflow-x: auto; font-size: 0.86rem;
-  border-left: 5px solid var(--acc); }
-table { border-collapse: collapse; width: 100%; }
-td, th { border-bottom: 1px solid var(--line); padding: 0.45rem 0.6rem;
-  text-align: left; }
-.shots { display: grid; gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
-.shots img { width: 100%; height: auto; border: 1px solid var(--line);
-  border-radius: 10px; background: #f4f1e8; }
-footer { padding: 2rem 6vw; border-top: 1px solid var(--line);
-  color: var(--mut); }
-.rail { display: flex; gap: 1.2rem; align-items: flex-start; }
-.rail nav { position: sticky; top: 1rem; min-width: 180px; }
-@media (max-width: 760px) { .rail { flex-direction: column; }
-  .rail nav { position: static; } }
-@media (prefers-reduced-motion: reduce) {
-  .card.pop { animation: none; } * { scroll-behavior: auto; } }
+@font-face { font-family:'Abril Fatface'; src:url('fonts/AbrilFatface-Regular.ttf') format('truetype'); font-display:swap; }
+@font-face { font-family:'Barlow'; src:url('fonts/Barlow-Regular.ttf') format('truetype'); font-display:swap; }
+@font-face { font-family:'Barlow'; src:url('fonts/Barlow-SemiBold.ttf') format('truetype'); font-weight:600; font-display:swap; }
+:root{ --ground:#232d1a; --panel:rgba(238,242,235,.07); --ink:#eef2eb; --mut:#b9c4ae; --rust:#c96f3a; --teal:#7fc4c9; --reed:#7d9b63; }
+*{box-sizing:border-box} body{margin:0;background:var(--ground);color:var(--ink);font-family:'Barlow',sans-serif;line-height:1.55}
+h1,h2,.wordmark{font-family:'Abril Fatface',serif;font-weight:400}
+code,pre{font-family:ui-monospace,Menlo,monospace}
+a{color:var(--rust);text-decoration:underline dotted;text-underline-offset:3px}
+a:hover{color:var(--teal)} a:visited{color:var(--reed)}
+.btn{display:inline-block;border:2px solid var(--reed);border-radius:999px;padding:.42rem 1.1rem;background:rgba(238,242,235,.14);color:var(--ink);font-weight:600;text-decoration:none;transition:transform .15s ease,background .15s ease}
+.btn:hover{transform:translateY(-1px);background:linear-gradient(100deg,rgba(238,242,235,.14) 20%,rgba(127,196,201,.45) 50%,rgba(238,242,235,.14) 80%);color:var(--ink)}
+.btn:active{transform:translateY(1px) rotate(.6deg);background:rgba(127,196,201,.35)}
+.btn.primary{background:var(--rust);border-color:var(--rust);color:#fff}
+.hero{padding:2.2rem 5vw 0}.hero img.lawn{width:100%;height:auto;display:block;border-radius:6px}
+.brand{display:flex;gap:1rem;align-items:center;padding:1.1rem 5vw 0}.brand img{width:74px;height:74px;object-fit:cover;border-radius:10px}
+.brand h1{font-size:2.3rem;margin:.1em 0}.brand p{margin:.1em 0;color:var(--mut)}
+nav.tally{display:flex;gap:.6rem;flex-wrap:wrap;padding:1rem 5vw}
+main{padding:0 5vw 2rem;max-width:1060px;margin:0 auto}
+.subline{font-size:1.13rem;max-width:66ch}
+.rows{border-top:3px solid var(--rust);margin-top:1.4rem}
+.row{display:grid;grid-template-columns:52px 170px 1fr;gap:1rem;padding:1rem .4rem;border-bottom:1px solid rgba(238,242,235,.25);background:var(--panel)}
+.row .no{font-family:'Abril Fatface',serif;font-size:1.5rem;color:var(--rust)}
+.row .cast{color:var(--teal);font-size:1.2rem}
+.row h3{margin:.15em 0;font-size:1.02rem;letter-spacing:.02em}
+.row p{margin:.2em 0}
+.cards{display:grid;gap:.8rem;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-top:.6rem}
+.card{background:rgba(20,26,14,.55);border-top:6px solid transparent;border-image:linear-gradient(90deg,var(--reed),transparent) 1;border-left:1px solid rgba(238,242,235,.5);border-right:1px solid rgba(238,242,235,.5);border-bottom:1px solid rgba(238,242,235,.5);padding:.8rem .9rem 1.4rem;position:relative}
+.card::after{content:'~';position:absolute;bottom:.2rem;left:50%;color:var(--rust);font-weight:700}
+.card code{word-break:break-all}
+pre.code{background:#141a10;color:#e8e6df;padding:1rem 1.2rem;border-radius:8px;overflow-x:auto;font-size:.84rem;border-left:5px solid var(--teal)}
+table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid rgba(238,242,235,.3);padding:.45rem .6rem;text-align:left}
+.shots{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.shots img{width:100%;height:auto;border-radius:6px;background:#f4f1e8}
+.divider{height:26px;margin:2rem 0;background:radial-gradient(ellipse 14px 8px at 50% 60%,#0d0f0a 62%,transparent 64%),repeating-linear-gradient(100deg,transparent 0 22px,rgba(125,155,99,.65) 22px 24px,transparent 24px 46px)}
+footer{padding:1.6rem 5vw 2.4rem;color:var(--mut);border-top:1px solid rgba(238,242,235,.3)}
+.well{background:rgba(238,242,235,.85);color:#1c2416;border-radius:0 0 10px 10px;padding:.35rem .7rem;display:inline-block;font-family:ui-monospace,monospace}
+@media(max-width:700px){.row{grid-template-columns:38px 1fr}.row .what{grid-column:2}}
 </style>
 </head>
-<body class="layout-note">
-<!-- This page exists for Athena-ARM64-ISO-Build alone: the layout (notebook),
-     the colors, and the type were picked for this project, not
-     shared with the other project pages. The code block below is
-     copied from the file it names, line for line. If it looks
-     plain, that is because the project is plain, and I would
-     rather the page match the project than dress it up. The one
-     thing I will not do here is oversell: what this project does
-     not do is stated on the page, not hidden from it. -->
+<body>
 <header class="hero">
-  <img class="logo" src="assets/logo.png" alt="Athena ARM64 ISO Build logo">
-  <img class="banner" src="assets/banner.png" alt="">
-  <h1>Athena ARM64 ISO Build</h1>
-  <p class="mono"><a href="https://github.com/Epsilon0xCell/Athena-ARM64-ISO-Build">github.com/Epsilon0xCell/Athena-ARM64-ISO-Build</a></p>
+  <img class="lawn" src="assets/intro-banner.png" alt="Night lawn after rain, worms up, blackbirds counting">
 </header>
-
+<div class="brand">
+  <img src="assets/logo.png" alt="Athena ARM64 ISO Build logo">
+  <div>
+    <h1>Athena ARM64 ISO Build</h1>
+    <p class="wordmark">Athena-ARM64-ISO-Build, counted after rain</p>
+    <p><a href="https://github.com/Epsilon0xCell/Athena-ARM64-ISO-Build">github.com/Epsilon0xCell/Athena-ARM64-ISO-Build</a></p>
+  </div>
+</div>
+<nav class="tally" aria-label="on this page">
+  <a class="btn primary" href="#run">Run it</a>
+  <a class="btn" href="#files">The files</a>
+  <a class="btn" href="#sheets">The sheets</a>
+  <a class="btn" href="https://github.com/Epsilon0xCell/Athena-ARM64-ISO-Build">The repo</a>
+</nav>
 <main>
-  <section class="rail">
-    <nav aria-label="on this page">
-      <p class="mono"><a href="#run">Run it</a><br>
-      <a href="#files">The files</a><br>
-      <a href="#sheets">The sheets</a><br>
-      <a href="https://github.com/Epsilon0xCell/Athena-ARM64-ISO-Build">The repo</a></p>
-    </nav>
-    <div>
-      <p class="lede">This repository contains the configuration and build system for creating AthenaOS ISO images for ARM64 (aarch64) architecture.</p>
-      <div class="grid">
-        <div class="card pop"><h3>What it is</h3>
-          <p>Athena ARM64 ISO Build: 12 files, 480 counted
-          lines across YAML 282, Markdown 104, Shell 94. One job, done in the
-          open, in files you can read.</p></div>
-        <div class="card pop"><h3>The biggest piece</h3>
-          <p><code>.github/workflows/build-arm64-iso.yml</code> carries the most
-          lines. If the project grows, that file is where the growth
-          lands first, for better or worse.</p></div>
-        <div class="card pop"><h3>The honest gap</h3>
-          <p>No test files yet. That is the honest gap, and the roadmap in the visuals folder says what the first one should cover.</p></div>
-      </div>
-      <section id="run">
-        <h2>Run it</h2>
-        <p>The repo README has the exact commands for this one. The
-        shape is the shape for most of my projects: clone it, read the
-        top file first so you know what will happen, then run it on
-        something you do not mind breaking.</p>
-        <p class="mono">$ git clone https://github.com/Epsilon0xCell/Athena-ARM64-ISO-Build.git<br>$ cd Athena-ARM64-ISO-Build</p>
-      </section>
-      
-  <section aria-label="real code">
-    <h2>The code, as it sits in the repo</h2>
-    <p>From <code>.github/workflows/build-arm64-iso.yml</code>, line 1 on. I did
-    not tidy it for the page. What you see is what the file has.</p>
+  <p class="subline">This repository holds the configuration and build system for AthenaOS ISO images on ARM64: a Fedora 40 based live image, defined by <code>athena-iso.ks</code>, with the pacman configuration and keyrings carried in <code>src/</code>.</p>
+  <p>Athena ARM64 ISO Build: 12 files, 480 counted lines across YAML 282, Markdown 104, Shell 94. <code>.github/workflows/build-arm64-iso.yml</code> carries the most lines. No test files yet: that is the honest gap, and the roadmap in the visuals folder says what the first one should cover.</p>
+  <section id="run">
+    <h2>Run it: the count, row by row</h2>
+    <div class="rows">
+<div class="row"><div class="no">1</div><div class="what"><span class="cast">&#9696;</span><h3>Triggers</h3></div><div><p>Push to main, creation of a <code>v*</code> tag, pull requests to main, and manual dispatch with an optional release version. The tally starts when any of these is marked.</p></div></div>
+<div class="row"><div class="no">2</div><div class="what"><span class="cast">&#9696;</span><h3>Runner facts</h3></div><div><p>The job runs on <code>ubuntu-latest</code> (x86_64), sets up QEMU ARM64 emulation and Docker Buildx, builds a Fedora 40 builder container, and runs <code>livemedia-creator</code> inside it.</p></div></div>
+<div class="row"><div class="no">3</div><div class="what"><span class="cast">&#9696;</span><h3>Outputs</h3></div><div><p>Artifacts are kept for 30 days, together with checksums and the build log, and releases are created for tags and for manual runs. Checksums sit in their puddle wells: <span class='well'>SHA256</span> <span class='well'>MD5</span></p></div></div>
+<div class="row"><div class="no">4</div><div class="what"><span class="cast">&#9696;</span><h3>Local checking</h3></div><div><p>Run <code>bash validate-kickstart.sh</code>. The syntax check uses <code>ksvalidator</code> at version F40 from the pykickstart package (Fedora: <code>sudo dnf install pykickstart</code>; Ubuntu/Debian: <code>sudo apt install pykickstart</code>). Repository URL probes are advisory; the syntax check and the required file checks can fail the run.</p></div></div>
+<div class="row"><div class="no">5</div><div class="what"><span class="cast">&#9696;</span><h3>Target facts</h3></div><div><p>Architecture aarch64, XFCE4 as the default session. This is an experimental ARM64 port: test on your target device before production use, and some packages might not be available for ARM64.</p></div></div>
+    </div>
+    <div class="divider" role="separator"></div>
+    <h2>The workflow, as it sits in the repo</h2>
+    <p>From <code>.github/workflows/build-arm64-iso.yml</code>, line 1 on. It is not tidied for the page.</p>
     <pre class="code"><code>name: Build AthenaOS ARM64 ISO
 
 on:
@@ -127,10 +100,12 @@ env:
 jobs:
   build-arm64-iso:
     runs-on: ubuntu-latest</code></pre>
+    <p class="mono">$ git clone https://github.com/Epsilon0xCell/Athena-ARM64-ISO-Build.git<br>$ cd Athena-ARM64-ISO-Build</p>
   </section>
-      <section id="files">
-        <h2>The files that matter</h2>
-        <table><tr><th>File</th><th>Lines</th></tr>
+  <div class="divider" role="separator"></div>
+  <section id="files">
+    <h2>The files</h2>
+    <table><tr><th>File</th><th>Lines</th></tr>
         <tr><td><code>.github/workflows/build-arm64-iso.yml</code></td><td>282</td></tr>
         <tr><td><code>README.md</code></td><td>104</td></tr>
         <tr><td><code>validate-kickstart.sh</code></td><td>94</td></tr>
@@ -138,22 +113,27 @@ jobs:
         <tr><td><code>src/chaotic.gpg</code></td><td>0</td></tr>
         <tr><td><code>src/pacman.conf</code></td><td>0</td></tr>
         </table>
-        <p>Names doing the work: <span class="mono">no named functions in the snapshot</span>.</p>
-      </section>
-      <section id="sheets">
-        <h2>Drawn by hand</h2>
-        <p>I sketch my projects on notebook paper so I have to
-        understand them well enough to draw them. The full set,
-        with the counts and how they were counted, is the
-        <a href="https://github.com/Epsilon0xCell/Athena-ARM64-ISO-Build/tree/main/Athena-ARM64-ISO-Build-Visuals">Athena-ARM64-ISO-Build-Visuals</a>
-        folder in the repo. Nothing is drawn over the binder holes.
-        That is a rule, not a style.</p>
-        <div class="shots">
-          <img src="assets/architecture.png" alt="Hand drawn architecture sheet for Athena ARM64 ISO Build">
-          <img src="assets/flowchart.png" alt="Hand drawn flowchart sheet for Athena ARM64 ISO Build">
-          <img src="assets/product-map.png" alt="Hand drawn product map sheet for Athena ARM64 ISO Build">
-        </div>
-      </section>
+    <p>Names doing the work: <span class="mono">no named functions in the snapshot</span>.</p>
+    <h3>The src inventory, tallied one by one</h3>
+    <div class="cards">
+<div class="card"><code>src/athena-mirrorlist</code></div>
+<div class="card"><code>src/athena-trusted</code></div>
+<div class="card"><code>src/athena-revoked</code></div>
+<div class="card"><code>src/athena.gpg</code></div>
+<div class="card"><code>src/chaotic-trusted</code></div>
+<div class="card"><code>src/chaotic-revoked</code></div>
+<div class="card"><code>src/chaotic.gpg</code></div>
+<div class="card"><code>src/pacman.conf</code></div>
+    </div>
+  </section>
+  <div class="divider" role="separator"></div>
+  <section id="sheets">
+    <h2>The sheets</h2>
+    <p>I sketch my projects on notebook paper so I have to understand them well enough to draw them. The full set, with the counts and how they were counted, is the <a href="https://github.com/Epsilon0xCell/Athena-ARM64-ISO-Build/tree/main/Athena-ARM64-ISO-Build-Visuals">Athena-ARM64-ISO-Build-Visuals</a> folder in the repo. Nothing is drawn over the binder holes. That is a rule, not a style.</p>
+    <div class="shots">
+      <img src="assets/architecture.png" alt="Hand drawn architecture sheet for Athena ARM64 ISO Build">
+      <img src="assets/flowchart.png" alt="Hand drawn flowchart sheet for Athena ARM64 ISO Build">
+      <img src="assets/product-map.png" alt="Hand drawn product map sheet for Athena ARM64 ISO Build">
     </div>
   </section>
 </main>
@@ -162,6 +142,7 @@ jobs:
   from the repo itself on 2026-10-30: the counts are the
   repo's counts, the code is the repo's code, and the gaps are the
   repo's gaps.</p>
+  <p><img src="assets/banner.png" alt="" style="width:100%;height:auto;border-radius:6px"></p>
 </footer>
 </body>
 </html>

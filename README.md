@@ -1,4 +1,5 @@
-![banner](assets/banner.png)
+![Introduction: earthworm census after rain](intro-banner.png)
+
 
 # AthenaOS ARM64
 
@@ -7,6 +8,13 @@ creating AthenaOS ISO images for ARM64 (aarch64) architecture: a
 Fedora 40 based live image defined by the `athena-iso.ks` kickstart
 file, plus the pacman configuration and keyrings the live system
 carries in `src/`.
+
+
+![Athena-ARM64-ISO-Build](assets/banner.png)
+
+![Animated census scene](assets-scene.svg)
+
+![Cast trail separator](sep-light.svg)
 
 ## Automated builds
 
@@ -31,6 +39,10 @@ Built ISO images are available in two places:
    SHA256 and MD5 checksums and the build log
 2. **Releases**: created for tags and for manual runs
 
+![Turf strip separator](sep-heavy.svg)
+
+![Cast trail separator](sep-light.svg)
+
 ## Build process
 
 1. QEMU and Buildx are set up for `linux/arm64`
@@ -40,6 +52,10 @@ Built ISO images are available in two places:
 4. `livemedia-creator` builds the ISO from `athena-iso.ks`
 5. SHA256 and MD5 checksums are generated, and the ISO is uploaded as
    an artifact or release
+
+![Turf strip separator](sep-heavy.svg)
+
+![Cast trail separator](sep-light.svg)
 
 ## Local development
 
@@ -69,6 +85,10 @@ ksvalidator --version F40 athena-iso.ks
 Building the full ISO locally is not scripted in this repo; the
 supported build path is the GitHub Actions workflow above.
 
+![Turf strip separator](sep-heavy.svg)
+
+![Cast trail separator](sep-light.svg)
+
 ## Repository structure
 
 ```
@@ -88,18 +108,34 @@ supported build path is the GitHub Actions workflow above.
 └── README.md                  # This file
 ```
 
+![Turf strip separator](sep-heavy.svg)
+
+![Cast trail separator](sep-light.svg)
+
 ## Target architecture
 
 - **Architecture**: ARM64 (aarch64)
 - **Base distribution**: Fedora 40, for the live image and build tools
 - **Desktop environment**: XFCE4 (default session in the kickstart)
 
+![Turf strip separator](sep-heavy.svg)
+
+![Cast trail separator](sep-light.svg)
+
 ## Important notes
+
+<!-- deco -->
+> **Observation, field note:** the notes in this section are pinned to the census sheet as written below.
+<!-- /deco -->
 
 - This is an experimental ARM64 port of AthenaOS
 - Thoroughly test on your target ARM64 device before production use
 - Some packages might not be available for ARM64 architecture
 - Report issues and compatibility problems
+
+![Turf strip separator](sep-heavy.svg)
+
+![Cast trail separator](sep-light.svg)
 
 ## Contributing
 
@@ -109,11 +145,19 @@ supported build path is the GitHub Actions workflow above.
 4. Create a Pull Request
 5. The GitHub Actions workflow will run a build
 
+![Turf strip separator](sep-heavy.svg)
+
+![Cast trail separator](sep-light.svg)
+
 ## Support
 
 - **Issues**: Use GitHub Issues for bug reports and feature requests
 - **Discussions**: Use GitHub Discussions for general questions
 - **Main project**: Visit the main AthenaOS repository for general support
+
+![Turf strip separator](sep-heavy.svg)
+
+![Cast trail separator](sep-light.svg)
 
 ## License
 

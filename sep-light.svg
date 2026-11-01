@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 18" role="img" aria-label="Worm cast trail separator">
+  <g id="cast-trail" fill="#6e5136">
+    <circle cx="60" cy="9" r="3.4"/><circle cx="130" cy="7" r="2.8"/><circle cx="200" cy="10" r="3.2"/><circle cx="270" cy="8" r="2.6"/><circle cx="340" cy="9" r="3"/>
+    <circle cx="560" cy="9" r="3"/><circle cx="630" cy="8" r="2.6"/><circle cx="700" cy="10" r="3.2"/><circle cx="770" cy="7" r="2.8"/><circle cx="840" cy="9" r="3.4"/>
+  </g>
+  <ellipse id="centre-gap-hole" cx="450" cy="10" rx="16" ry="4" fill="#17110b"/>
+</svg>
