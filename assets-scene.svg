@@ -1,49 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 220" role="img" aria-label="Earthworm census after rain, animated scene">
-  <rect id="sky" width="900" height="70" fill="#2c3a48"/>
-  <g id="far-band">
-    <rect id="hedge" y="52" width="900" height="34" fill="#17251a"/>
-    <g id="reed-tops" stroke="#567a42" stroke-width="2">
-      <line x1="60" y1="58" x2="52" y2="14"><animateTransform attributeName="transform" type="rotate" values="-2 60 58;2 60 58;-2 60 58" dur="7s" repeatCount="indefinite"/></line>
-      <line x1="200" y1="58" x2="208" y2="10"><animateTransform attributeName="transform" type="rotate" values="2 200 58;-2 200 58;2 200 58" dur="8s" repeatCount="indefinite"/></line>
-      <line x1="420" y1="58" x2="412" y2="16"><animateTransform attributeName="transform" type="rotate" values="-1.6 420 58;1.6 420 58;-1.6 420 58" dur="6.4s" repeatCount="indefinite"/></line>
-      <line x1="640" y1="58" x2="650" y2="12"><animateTransform attributeName="transform" type="rotate" values="1.8 640 58;-1.8 640 58;1.8 640 58" dur="7.6s" repeatCount="indefinite"/></line>
-      <line x1="820" y1="58" x2="812" y2="18"><animateTransform attributeName="transform" type="rotate" values="-2 820 58;2 820 58;-2 820 58" dur="6.8s" repeatCount="indefinite"/></line>
-    </g>
-    <rect id="mist" x="-300" y="40" width="300" height="16" fill="#e2eae4" opacity="0.16">
-      <animate attributeName="x" values="-300;900" dur="46s" repeatCount="indefinite"/>
-    </rect>
-  </g>
-  <rect id="lawn" y="70" width="900" height="150" fill="#22351f"/>
-  <g id="mid-band">
-    <g id="puddle-left"><ellipse cx="200" cy="150" rx="86" ry="13" fill="#0f505c"/><ellipse cx="200" cy="150" rx="30" ry="5" fill="#a8c0ba" opacity="0.5"><animate attributeName="rx" values="18;44;18" dur="9s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.55;0.2;0.55" dur="9s" repeatCount="indefinite"/></ellipse></g>
-    <g id="puddle-right"><ellipse cx="660" cy="176" rx="110" ry="15" fill="#0f505c"/><ellipse cx="660" cy="176" rx="36" ry="6" fill="#a8c0ba" opacity="0.5"><animate attributeName="rx" values="20;56;20" dur="11s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.5;0.18;0.5" dur="11s" repeatCount="indefinite"/></ellipse></g>
-    <g id="worm-row" fill="none" stroke-linecap="round">
-      <path id="worm-a" d="M120 168 q16 -22 32 0" stroke="#b0542c" stroke-width="8"><animateTransform attributeName="transform" type="translate" values="0 4;0 -3;0 4" dur="6s" repeatCount="indefinite"/></path>
-      <path id="worm-b" d="M330 190 q18 -24 36 0" stroke="#ce7442" stroke-width="9"><animateTransform attributeName="transform" type="translate" values="0 -2;0 5;0 -2" dur="7.4s" repeatCount="indefinite"/></path>
-      <path id="worm-c" d="M520 158 q15 -20 30 0" stroke="#b0542c" stroke-width="8"><animateTransform attributeName="transform" type="translate" values="0 5;0 -2;0 5" dur="6.8s" repeatCount="indefinite"/></path>
-      <path id="worm-d" d="M760 196 q17 -22 34 0" stroke="#ce7442" stroke-width="9"><animateTransform attributeName="transform" type="translate" values="0 -3;0 4;0 -3" dur="7.9s" repeatCount="indefinite"/></path>
-    </g>
-    <g id="blackbird-a" fill="#101210">
-      <ellipse cx="440" cy="128" rx="24" ry="12"/><circle cx="466" cy="120" r="8"/><path d="M472 120 l14 3 -14 4 z" fill="#b0542c"/>
-      <animateTransform attributeName="transform" type="translate" values="0 0;0 3;0 0" dur="2.6s" repeatCount="indefinite"/>
-    </g>
-    <g id="blackbird-b" fill="#101210">
-      <ellipse cx="120" cy="112" rx="21" ry="10"/><circle cx="143" cy="105" r="7"/><path d="M149 105 l12 3 -12 3 z" fill="#b0542c"/>
-      <animateTransform attributeName="transform" type="translate" values="0 3;0 0;0 3" dur="3.1s" repeatCount="indefinite"/>
-    </g>
-  </g>
-  <g id="near-band">
-    <g id="snail">
-      <circle cx="0" cy="0" r="11" fill="none" stroke="#d8c098" stroke-width="3"/>
-      <circle cx="0" cy="0" r="6" fill="none" stroke="#d8c098" stroke-width="2.4"/>
-      <circle cx="0" cy="0" r="2.4" fill="#b0542c"/>
-      <path d="M8 8 l16 3 -14 4 z" fill="#988264"/>
-      <animateTransform attributeName="transform" type="translate" values="24 200;876 204" dur="150s" repeatCount="indefinite"/>
-    </g>
-    <g id="front-grass" stroke="#567a42" stroke-width="2" fill="none">
-      <path d="M80 220 q4 -18 -4 -30"><animate attributeName="d" values="M80 220 q4 -18 -4 -30;M80 220 q10 -14 6 -26;M80 220 q4 -18 -4 -30" dur="5s" repeatCount="indefinite"/></path>
-      <path d="M470 220 q-4 -16 4 -28"><animate attributeName="d" values="M470 220 q-4 -16 4 -28;M470 220 q-10 -12 -6 -24;M470 220 q-4 -16 4 -28" dur="5.8s" repeatCount="indefinite"/></path>
-      <path d="M830 220 q4 -18 -4 -30"><animate attributeName="d" values="M830 220 q4 -18 -4 -30;M830 220 q10 -14 6 -26;M830 220 q4 -18 -4 -30" dur="5.4s" repeatCount="indefinite"/></path>
-    </g>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="190" viewBox="0 0 800 190">
+<rect width="800" height="190" fill="#2b2f36"/>
+<line x1="0" y1="138" x2="800" y2="138" stroke="#ff6b1a" stroke-width="4"/>
+<rect x="60" y="138" width="64" height="30" fill="#3d6e9e" stroke="#8fb0d1" stroke-width="2"/><rect x="78" y="146" width="28" height="14" fill="#2b2f36"/><rect x="210" y="138" width="64" height="30" fill="#3d6e9e" stroke="#8fb0d1" stroke-width="2"/><rect x="228" y="146" width="28" height="14" fill="#2b2f36"/><rect x="360" y="138" width="64" height="30" fill="#3d6e9e" stroke="#8fb0d1" stroke-width="2"/><rect x="378" y="146" width="28" height="14" fill="#2b2f36"/><rect x="510" y="138" width="64" height="30" fill="#3d6e9e" stroke="#8fb0d1" stroke-width="2"/><rect x="528" y="146" width="28" height="14" fill="#2b2f36"/><rect x="660" y="138" width="64" height="30" fill="#3d6e9e" stroke="#8fb0d1" stroke-width="2"/><rect x="678" y="146" width="28" height="14" fill="#2b2f36"/>
+<g><circle cx="140" cy="92" r="36" fill="#3d6e9e" stroke="#ff6b1a" stroke-width="4"/><circle cx="140" cy="92" r="14" fill="#2b2f36" stroke="#ffffff" stroke-width="2"/><circle cx="140" cy="92" r="4" fill="#ff6b1a"/><animateTransform attributeName="transform" type="translate" values="0 0;520 0;0 0" dur="9s" repeatCount="indefinite"/></g>
+<g opacity="0.9"><circle cx="690" cy="52" r="20" fill="#3d6e9e"/><circle cx="683" cy="48" r="6" fill="#ffffff"/><circle cx="697" cy="48" r="6" fill="#ffffff"/><circle cx="683" cy="48" r="2.5" fill="#2b2f36"/><circle cx="697" cy="48" r="2.5" fill="#2b2f36"/><polygon points="690,54 685,60 695,60" fill="#ff6b1a"/><path d="M672 38 L660 22 M708 38 L720 22" stroke="#3d6e9e" stroke-width="4" stroke-linecap="round"/><animate attributeName="opacity" values="0.9;0.5;0.9" dur="4.5s" repeatCount="indefinite"/></g>
+<rect x="640" y="74" width="100" height="6" fill="#ff6b1a"/>
 </svg>

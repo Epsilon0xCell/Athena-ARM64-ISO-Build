@@ -1,7 +1,24 @@
-![Introduction: earthworm census after rain](intro-banner.png)
-
+<p align="center"><img src="assets/banner.png" alt="Athena ARM64 ISO Build banner" width="800"></p>
 
 # AthenaOS ARM64
+
+**The Pressing Plant**
+
+A glowing disc comes off a line of ARM chips in steel blue and signal orange, while the owl keeps watch over the press.
+
+<p align="center"><img src="assets/logo.png" alt="Athena ARM64 ISO Build logo" width="200"></p>
+
+## Contents
+
+- [Automated builds](#automated-builds)
+- [Build process](#build-process)
+- [Local development](#local-development)
+- [Repository structure](#repository-structure)
+- [Target architecture](#target-architecture)
+- [Important notes](#important-notes)
+- [Contributing](#contributing)
+- [Support](#support)
+- [License](#license)
 
 This repository contains the configuration and build system for
 creating AthenaOS ISO images for ARM64 (aarch64) architecture: a
@@ -10,7 +27,7 @@ file, plus the pacman configuration and keyrings the live system
 carries in `src/`.
 
 
-![Athena-ARM64-ISO-Build](assets/banner.png)
+![Introduction banner](intro-banner.png)
 
 ![Animated census scene](assets-scene.svg)
 

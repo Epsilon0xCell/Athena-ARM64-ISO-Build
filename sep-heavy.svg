@@ -1,7 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 44" role="img" aria-label="Turf strip separator">
-  <rect id="grass-band" width="900" height="16" fill="#2e4423"/>
-  <g id="blades" stroke="#567a42" stroke-width="2"><path d="M20 16 q3 -10 -2 -14 M90 16 q-3 -10 2 -14 M170 16 q3 -10 -2 -14 M250 16 q-3 -10 2 -14 M330 16 q3 -10 -2 -14 M410 16 q-3 -10 2 -14 M490 16 q3 -10 -2 -14 M570 16 q-3 -10 2 -14 M650 16 q3 -10 -2 -14 M730 16 q-3 -10 2 -14 M810 16 q3 -10 -2 -14 M880 16 q-3 -10 2 -14"/></g>
-  <rect id="soil-band" y="16" width="900" height="28" fill="#34261a"/>
-  <path id="bridging-worm" d="M404 34 q46 -30 92 0" fill="none" stroke="#b0542c" stroke-width="9" stroke-linecap="round"/>
-  <path d="M404 34 q46 -30 92 0" fill="none" stroke="#117a84" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="4 9"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="26" viewBox="0 0 800 26"><rect width="800" height="26" fill="#2b2f36"/><rect x="0" y="11" width="800" height="4" fill="#3d6e9e"/><circle cx="340" cy="13" r="6" fill="#ff6b1a"/><circle cx="400" cy="13" r="7" fill="#3d6e9e"/><circle cx="460" cy="13" r="6" fill="#ff6b1a"/><rect x="392" y="5" width="16" height="16" fill="#3d6e9e" transform="rotate(45 400 13)"/></svg>
