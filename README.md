@@ -1,4 +1,4 @@
-<p align="center"><img src="assets/banner.png" alt="Athena ARM64 ISO Build banner" width="800"></p>
+<p align="center"><img src="assets/banner.png" alt="Athena ARM64 ISO Build banner" width="640"></p>
 
 # AthenaOS ARM64
 
@@ -6,19 +6,13 @@
 
 A glowing disc comes off a line of ARM chips in steel blue and signal orange, while the owl keeps watch over the press.
 
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg) ![Architecture: ARM64](https://img.shields.io/badge/Architecture-ARM64-orange.svg) ![Athena OS](https://img.shields.io/badge/OS-AthenaOS-blue.svg)
+
 <p align="center"><img src="assets/logo.png" alt="Athena ARM64 ISO Build logo" width="200"></p>
 
 ## Contents
 
-- [Automated builds](#automated-builds)
-- [Build process](#build-process)
-- [Local development](#local-development)
-- [Repository structure](#repository-structure)
-- [Target architecture](#target-architecture)
-- [Important notes](#important-notes)
-- [Contributing](#contributing)
-- [Support](#support)
-- [License](#license)
+[Quick Start](#quick-start) | [Automated builds](#automated-builds) | [Build process](#build-process) | [Local development](#local-development) | [Repository structure](#repository-structure) | [Target architecture](#target-architecture) | [Important notes](#important-notes) | [Contributing](#contributing) | [Support](#support) | [License](#license) | [Gallery](#gallery)
 
 This repository contains the configuration and build system for
 creating AthenaOS ISO images for ARM64 (aarch64) architecture: a
@@ -26,10 +20,20 @@ Fedora 40 based live image defined by the `athena-iso.ks` kickstart
 file, plus the pacman configuration and keyrings the live system
 carries in `src/`.
 
-
-![Introduction banner](intro-banner.png)
-
 ![Animated census scene](assets-scene.svg)
+
+![Cast trail separator](sep-light.svg)
+
+## Quick Start
+
+The ISO itself is built by the GitHub Actions workflow in the Automated builds section below. The commands below are the local check from the Local development section, run before a change is pushed:
+
+```bash
+bash validate-kickstart.sh
+ksvalidator --version F40 athena-iso.ks
+```
+
+For a full ISO build, push to main, create a `v*` tag, open a pull request to main, or run the workflow manually from the Actions tab, with an optional release version input. Building the full ISO locally is not scripted in this repo; the supported build path is the GitHub Actions workflow.
 
 ![Cast trail separator](sep-light.svg)
 
@@ -56,21 +60,17 @@ Built ISO images are available in two places:
    SHA256 and MD5 checksums and the build log
 2. **Releases**: created for tags and for manual runs
 
-![Turf strip separator](sep-heavy.svg)
-
 ![Cast trail separator](sep-light.svg)
 
 ## Build process
 
-1. QEMU and Buildx are set up for `linux/arm64`
-2. A Fedora 40 container is built with lorax, anaconda, and
+1. **Set up emulation:** QEMU and Buildx are set up for `linux/arm64`
+2. **Build the builder container:** A Fedora 40 container is built with lorax, anaconda, and
    livemedia-creator, and the `src/` pacman files are copied into it
-3. The kickstart file is validated with `ksvalidator`
-4. `livemedia-creator` builds the ISO from `athena-iso.ks`
-5. SHA256 and MD5 checksums are generated, and the ISO is uploaded as
+3. **Validate the kickstart:** The kickstart file is validated with `ksvalidator`
+4. **Build the ISO:** `livemedia-creator` builds the ISO from `athena-iso.ks`
+5. **Checksum and upload:** SHA256 and MD5 checksums are generated, and the ISO is uploaded as
    an artifact or release
-
-![Turf strip separator](sep-heavy.svg)
 
 ![Cast trail separator](sep-light.svg)
 
@@ -102,8 +102,6 @@ ksvalidator --version F40 athena-iso.ks
 Building the full ISO locally is not scripted in this repo; the
 supported build path is the GitHub Actions workflow above.
 
-![Turf strip separator](sep-heavy.svg)
-
 ![Cast trail separator](sep-light.svg)
 
 ## Repository structure
@@ -125,8 +123,6 @@ supported build path is the GitHub Actions workflow above.
 └── README.md                  # This file
 ```
 
-![Turf strip separator](sep-heavy.svg)
-
 ![Cast trail separator](sep-light.svg)
 
 ## Target architecture
@@ -134,8 +130,6 @@ supported build path is the GitHub Actions workflow above.
 - **Architecture**: ARM64 (aarch64)
 - **Base distribution**: Fedora 40, for the live image and build tools
 - **Desktop environment**: XFCE4 (default session in the kickstart)
-
-![Turf strip separator](sep-heavy.svg)
 
 ![Cast trail separator](sep-light.svg)
 
@@ -150,8 +144,6 @@ supported build path is the GitHub Actions workflow above.
 - Some packages might not be available for ARM64 architecture
 - Report issues and compatibility problems
 
-![Turf strip separator](sep-heavy.svg)
-
 ![Cast trail separator](sep-light.svg)
 
 ## Contributing
@@ -162,8 +154,6 @@ supported build path is the GitHub Actions workflow above.
 4. Create a Pull Request
 5. The GitHub Actions workflow will run a build
 
-![Turf strip separator](sep-heavy.svg)
-
 ![Cast trail separator](sep-light.svg)
 
 ## Support
@@ -172,10 +162,14 @@ supported build path is the GitHub Actions workflow above.
 - **Discussions**: Use GitHub Discussions for general questions
 - **Main project**: Visit the main AthenaOS repository for general support
 
-![Turf strip separator](sep-heavy.svg)
-
 ![Cast trail separator](sep-light.svg)
 
 ## License
 
 This project follows the same license as the main AthenaOS project.
+
+![Turf strip separator](sep-heavy.svg)
+
+## Gallery
+
+![Introduction banner](intro-banner.png)
